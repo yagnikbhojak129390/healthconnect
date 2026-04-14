@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(HEALTH_WORKER)
+  district  String?
+  village   String?
+  phone     String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  lastLogin DateTime?
+
+  symptomReports SymptomReport[]
+  waterTests     WaterTest[]
+  alerts         Alert[]
+}
+
+model SymptomReport {
+  id           String   @id @default(cuid())
+  patientName  String
+  patientAge   Int
+  patientGender String
+  symptoms     String[]
+  severity     Severity
+  villageId    String
+  villageName  String
+  district     String
+  latitude     Float?
+  longitude    Float?
+  status       ReportStatus @default(PENDING)
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  reporter     User     @relation(fields: [reporterId], references: [id])
+  reporterId   String
+}
+
+model WaterTest {
+  id           String   @id @default(cuid())
+  sourceName   String
+  sourceType   SourceType
+  latitude     Float
+  longitude    Float
+  district     String
+  villageName  String
+  phLevel      Float
+  turbidity    Float
+  chlorine     Float?
+  coliforms    Boolean
+  riskLevel    RiskLevel
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  reporter     User     @relation(fields: [reporterId], references: [id])
+  reporterId   String
+}
+
+model Alert {
+  id          String      @id @default(cuid())
+  title       String
+  description String
+  severity    AlertSeverity
+  location    String
+  district    String
+  status      AlertStatus @default(ACTIVE)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  resolvedAt  DateTime?
+
+  createdBy   User        @relation(fields: [createdById], references: [id])
+  createdById String
+}
+
+model Village {
+  id         String    @id @default(cuid())
+  name       String
+  district   String
+  population Int
+  latitude   Float
+  longitude  Float
+  riskLevel  RiskLevel @default(LOW)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+// Enums
+enum Role {
+  ADMIN
+  HEALTH_WORKER
+}
+
+enum Severity {
+  MILD
+  MODERATE
+  SEVERE
+}
+
+enum ReportStatus {
+  PENDING
+  VERIFIED
+  RESOLVED
+  DISMISSED
+}
+
+enum SourceType {
+  WELL
+  RIVER
+  TAP
+  POND
+  BOREWELL
+  SPRING
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AlertSeverity {
+  INFO
+  WARNING
+  CRITICAL
+}
+
+enum AlertStatus {
+  ACTIVE
+  ACKNOWLEDGED
+  RESOLVED
+}
