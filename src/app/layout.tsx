@@ -9,16 +9,21 @@ const inter = Inter({
   display: "swap",
 });
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#14b8a6" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f766e" },
+  ],
+};
+
 export const metadata: Metadata = {
   title: "HealthConnect | Smart Health Surveillance System",
   description: "Early Warning System for Rural Health Monitoring in Northeast India",
   keywords: ["health surveillance", "disease outbreak", "water quality", "northeast india", "ASHA workers"],
   authors: [{ name: "HealthConnect Team" }],
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#14b8a6" },
-    { media: "(prefers-color-scheme: dark)", color: "#0f766e" },
-  ],
 };
 
 export default function RootLayout({
